@@ -7,4 +7,4 @@
     postfix_domain: "{{ hostname }}"
   roles:
     - initial-setup
-    # - nginx
+    - nginx
