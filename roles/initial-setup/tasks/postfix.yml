@@ -1,0 +1,7 @@
+---
+- name: Only send emails from localhost
+  lineinfile: dest=/etc/postfix/main.cf
+              regexp="^inet_interfaces\s"
+              line="inet_interfaces = loopback-only"
+              state=present
+  notify: Restart postfix

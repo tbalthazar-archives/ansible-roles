@@ -1,0 +1,31 @@
+---
+- name: Install Nginx
+  apt: name={{ item }} state=present
+  with_items:
+    - nginx-full
+
+- name: Install Let's Encrypt
+  apt:
+    pkg: letsencrypt
+    default_release: jessie-backports
+    state: latest
+    update_cache: yes
+    cache_valid_time: 600
+
+- name: Copy default Nginx configuration
+  copy:
+    src: etc/nginx/nginx.conf
+    dest: /etc/nginx
+
+- name: Generate DH cert
+  shell: openssl dhparam -out /etc/ssl/certs/dh4096.pem 4096
+
+- name: Configure default website
+  copy:
+    src: etc/nginx/sites-available/default
+    dest: /etc/nginx/sites-available/default
+
+- name: Allow Nginx traffic
+  ufw: 
+    rule: allow
+    name: 'Nginx Full'

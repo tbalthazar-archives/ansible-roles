@@ -1,0 +1,8 @@
+---
+packages:
+  - aptitude
+  - fail2ban
+  - logwatch
+  - postfix
+  - ufw
+  - unattended-upgrades

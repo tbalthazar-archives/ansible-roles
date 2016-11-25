@@ -1,0 +1,60 @@
+---
+- name: Create Vhost
+  template: 
+    src: etc/nginx/sites-available/vhost.j2
+    dest: /etc/nginx/sites-available/{{ domain }}
+    owner: root
+    group: root
+    mode: "u+rw,g+r,o+r"
+  notify: Restart nginx
+
+- name: Create Vhost directory
+  file:
+    path: /var/www/{{ domain }}
+    state: directory
+    owner: www-data
+    group: www-data
+    mode: "u+rwX,g+rwX,o+r"
+    recurse: yes
+
+- name: Enable Vhost
+  file:
+    src: /etc/nginx/sites-available/{{ domain }}
+    dest: /etc/nginx/sites-enabled/{{ domain }}
+    owner: root
+    group: root
+    state: link
+  notify:
+    - Restart nginx
+
+# make sure Nginx is restared before trying to get the SSL cert
+- name: Restart nginx
+  service:
+    name: nginx
+    state: restarted
+
+- name: Request certificate
+  shell: letsencrypt certonly -n --email {{notification_email}} --agree-tos -a webroot --webroot-path=/var/www/{{ domain }} -d {{ domain }}
+
+- name: Copy Vhost file with SSL config
+  template: 
+    src: etc/nginx/sites-available/vhost-ssl.j2
+    dest: /etc/nginx/sites-available/{{ domain }}
+    owner: root
+    group: root
+    mode: "u+rw,g+r,o+r"
+  notify: Restart nginx
+
+- name: Add cron job to renew certs
+  cron:
+    minute: 0
+    hour: 4
+    weekday: 1
+    job: /usr/bin/letsencrypt renew >> /var/log/le-renew.log
+
+- name: Add cron job to reload nginx after certs have been renewed
+  cron:
+    minute: 5
+    hour: 4
+    weekday: 1
+    job: /bin/systemctl reload nginx

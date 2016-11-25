@@ -1,0 +1,9 @@
+---
+- include: debconf.yml
+- include: apt.yml
+- include: host.yml
+- include: logwatch.yml
+- include: postfix.yml
+- include: users.yml
+- include: ssh.yml
+- include: ufw.yml

@@ -1,0 +1,29 @@
+---
+- name: Configure sources
+  copy:
+    src: etc/apt/sources_jessie.list
+    dest: /etc/apt/sources.list
+    owner: root
+    group: root
+    mode: 0644
+
+- name: update the package list and install aptitude
+  apt:
+    update_cache: yes
+
+- name: upgrade a server with apt-get
+  apt:
+    upgrade: dist
+
+- name: ensure required packages are installed
+  apt:
+    pkg: "{{ item }}"
+    state: latest
+    update_cache: yes
+    cache_valid_time: 600
+  with_items: "{{ packages }}"
+
+- name: Adjust APT update intervals
+  copy:
+    src: etc/apt/apt.conf.d/10periodic
+    dest: /etc/apt/apt.conf.d/10periodic

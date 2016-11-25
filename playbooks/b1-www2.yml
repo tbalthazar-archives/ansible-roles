@@ -1,0 +1,8 @@
+---
+- hosts: b1.tb.io
+  pre_tasks:
+    - include_vars: ../vaults/b1.yml
+  vars:
+    domain: www2.b1.tb.io
+  roles:
+    - nginx-vhost
