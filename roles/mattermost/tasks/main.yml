@@ -1,0 +1,90 @@
+---
+- name: Install prerequisites
+  apt: name={{ item }} state=present
+  with_items:
+    - libpq-dev
+    - python-psycopg2
+
+- name: Create Mattermost database
+  become_user: postgres
+  postgresql_db:
+    name: mattermost
+    encoding: 'UTF-8'
+
+- name: Create Mattermost database user
+  become_user: postgres
+  postgresql_user:
+    db: mattermost
+    name: mattermost
+    password: "{{ mattermost_db_user_password }}"
+
+- name: Create Mattermost system group
+  group:
+    name: mattermost
+    state: present
+
+- name: Create Mattermost system user
+  user:
+    name: mattermost
+    group: mattermost
+    system: yes
+
+- name: Add {{ user }} user to mattermost group
+  user:
+    name: "{{ user }}" 
+    groups: mattermost
+    append: yes
+
+- name: Download Mattermost
+  unarchive:
+    src: "https://releases.mattermost.com/{{ mattermost_version }}/mattermost-{{ mattermost_version }}-linux-amd64.tar.gz"
+    dest: "/opt"
+    remote_src: yes
+
+- name: Create Mattermost directories
+  file:
+    path: "{{ item }}"
+    state: directory
+  with_items:
+    - /opt/mattermost/data
+
+- name: Set permissions
+  file:
+    path: /opt/mattermost
+    state: directory
+    owner: mattermost
+    group: mattermost
+    mode: g+w
+    recurse: yes
+
+- name: Configuration
+  template: 
+    src: opt/mattermost/config/config.j2
+    dest: /opt/mattermost/config/config.json
+    owner: mattermost
+    group: mattermost
+    mode: "0660"
+
+- name: Copy service config file
+  copy:
+    src: etc/systemd/system/mattermost.service
+    dest: /etc/systemd/system/mattermost.service
+    owner: root
+    group: root
+    mode: 0664
+
+- name: Enable service
+  systemd:
+    state: started
+    enabled: yes
+    daemon_reload: yes
+    name: mattermost
+
+- name: Configure Nginx
+  template: 
+    src: etc/nginx/sites-available/vhost-ssl.j2
+    dest: /etc/nginx/sites-available/{{ domain }}
+    owner: root
+    group: root
+    mode: "u+rw,g+r,o+r"
+  notify: Restart nginx

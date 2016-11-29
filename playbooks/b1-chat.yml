@@ -3,6 +3,9 @@
   pre_tasks:
     - include_vars: ../vaults/b1.yml
   vars:
-    domain: www.b1.tb.io
+    domain: chat.b1.tb.io
+    mattermost_version: 3.5.1
   roles:
     - nginx-vhost
+    - postgres
+    - mattermost
