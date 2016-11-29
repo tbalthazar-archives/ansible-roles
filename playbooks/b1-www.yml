@@ -6,3 +6,4 @@
     domain: www.b1.tb.io
   roles:
     - nginx-vhost
+    - postgres
