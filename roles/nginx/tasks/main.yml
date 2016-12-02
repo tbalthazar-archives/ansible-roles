@@ -17,8 +17,10 @@
     src: etc/nginx/nginx.conf
     dest: /etc/nginx
 
-- name: Generate DH cert
-  shell: openssl dhparam -out /etc/ssl/certs/dh4096.pem 4096
+- name: Copy DH cert
+  copy:
+    src: etc/ssl/certs/dh4096.pem
+    dest: /etc/ssl/certs/dh4096.pem
 
 - name: Configure default website
   copy:

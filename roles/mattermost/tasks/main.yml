@@ -80,11 +80,11 @@
     daemon_reload: yes
     name: mattermost
 
-- name: Configure Nginx
-  template: 
-    src: etc/nginx/sites-available/vhost-ssl.j2
-    dest: /etc/nginx/sites-available/{{ domain }}
-    owner: root
-    group: root
-    mode: "u+rw,g+r,o+r"
-  notify: Restart nginx
+# - name: Configure Nginx
+#   template: 
+#     src: etc/nginx/sites-available/vhost-ssl.j2
+#     dest: /etc/nginx/sites-available/{{ domain }}
+#     owner: root
+#     group: root
+#     mode: "u+rw,g+r,o+r"
+#   notify: Restart nginx

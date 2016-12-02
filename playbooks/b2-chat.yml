@@ -1,0 +1,11 @@
+---
+- hosts: b2.tb.io
+  pre_tasks:
+    - include_vars: ../vaults/b1.yml
+  vars:
+    domain: chat.b2.tb.io
+    mattermost_version: 3.5.1
+  roles:
+    - nginx-vhost
+    - postgres
+    - mattermost
