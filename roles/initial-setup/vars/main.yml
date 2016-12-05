@@ -2,6 +2,7 @@
 packages:
   - aptitude
   - fail2ban
+  - git
   - logwatch
   - postfix
   - ufw
