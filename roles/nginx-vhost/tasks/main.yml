@@ -47,6 +47,7 @@
 
 - name: Add cron job to renew certs
   cron:
+    name: renew letsencrypt certs
     minute: 0
     hour: 4
     weekday: 1
@@ -54,6 +55,7 @@
 
 - name: Add cron job to reload nginx after certs have been renewed
   cron:
+    name: reload nginx
     minute: 5
     hour: 4
     weekday: 1
