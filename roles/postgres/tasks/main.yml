@@ -13,6 +13,14 @@
     group: root
     mode: "u+rwx,g+r,o+r"
 
+- name: Copy backup rotation config
+  template: 
+    src: postgres-backup-rotation.j2
+    dest: "{{postgres_backup_rotation_conf}}"
+    owner: root
+    group: root
+    mode: 0644
+
 - name: Setup cron job 
   cron:
     name: postgres backup
@@ -23,5 +31,5 @@
 - name: Add entry to backup file list
   lineinfile:
     dest: "{{ backup_include_filelist }}"
-    line: /var/local/backups/postgres
+    line: "{{ postgres_backup_dir }}"
     create: yes

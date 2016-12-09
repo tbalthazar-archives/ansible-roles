@@ -1,9 +1,10 @@
 #!/bin/bash
 
 # --- config
-backup_dir="/var/local/backups/postgres"
+backup_dir="{{ postgres_backup_dir }}"
 log_file="/var/log/postgres-backup-out.log" 
 email="{{ notification_email }}"
+backup_rotation_conf="{{postgres_backup_rotation_conf}}"
 
 # --- helper method
 now() {
@@ -14,11 +15,12 @@ now() {
 echo "$(now) - Starting backup of databases " >> $log_file
 
 # -- dump/gzip
-backup_file="$backup_dir/postgres-backup-$(now).dump.gz"
+backup_file="$backup_dir/postgres-all.dump.gz"
 sudo -iu postgres pg_dumpall | gzip > $backup_file
+backup_size=`du -k $backup_file | cut -f1`
+logrotate -f $backup_rotation_conf
 
 # --- logging
-backup_size=`du -k $backup_file | cut -f1`
 echo "$backup_file is $backup_size KB" >> $log_file
 echo "$(now) - Backup complete " >> $log_file
 

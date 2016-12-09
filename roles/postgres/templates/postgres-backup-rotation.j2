@@ -1,0 +1,6 @@
+"{{ postgres_backup_dir }}/*.gz" {
+  daily
+  rotate 31
+  missingok
+  dateext
+}

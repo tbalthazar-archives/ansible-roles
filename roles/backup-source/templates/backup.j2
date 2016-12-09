@@ -7,6 +7,7 @@ include_filelist="{{ backup_include_filelist }}"
 email="{{ notification_email }}"
 log_file="/var/log/duplicity.out.log"
 error_log_file="/var/log/duplicity.error.log"
+backup_url="{{ backup_url }}"
 
 # --- duplicity command
 duplicity \
@@ -16,7 +17,7 @@ duplicity \
   --include-filelist="$include_filelist" \
   --exclude='**' \
   / \
-  {{ backup_url }} \
+  $backup_url \
   >> $log_file \
   2>> $error_log_file
 
