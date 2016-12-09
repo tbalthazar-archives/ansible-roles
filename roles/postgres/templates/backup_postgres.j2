@@ -1,0 +1,26 @@
+#!/bin/bash
+
+# --- config
+backup_dir="/var/local/backups/postgres"
+log_file="/var/log/postgres-backup-out.log" 
+email="{{ notification_email }}"
+
+# --- helper method
+now() {
+  echo `date '+%Y-%m-%d--%H-%M-%S'`
+}
+
+# --- logging
+echo "$(now) - Starting backup of databases " >> $log_file
+
+# -- dump/gzip
+backup_file="$backup_dir/postgres-backup-$(now).dump.gz"
+sudo -iu postgres pg_dumpall | gzip > $backup_file
+
+# --- logging
+backup_size=`du -k $backup_file | cut -f1`
+echo "$backup_file is $backup_size KB" >> $log_file
+echo "$(now) - Backup complete " >> $log_file
+
+# -- send report by email
+tail -3 $log_file | mailx -s "Postgres backup log" $email

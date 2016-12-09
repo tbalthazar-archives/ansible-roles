@@ -65,6 +65,15 @@
     group: mattermost
     mode: "0660"
 
+- name: Add entry to backup file list
+  lineinfile:
+    dest: "{{ backup_include_filelist }}"
+    line: "{{ item.line }}"
+    create: yes
+  with_items:
+    - { line: '/opt/mattermost/config' }
+    - { line: '/opt/mattermost/data' }
+
 - name: Copy service config file
   copy:
     src: etc/systemd/system/mattermost.service

@@ -4,3 +4,24 @@
   with_items:
     - postgresql
     - postgresql-contrib
+
+- name: Copy backup script
+  template: 
+    src: backup_postgres.j2
+    dest: /usr/local/sbin/backup_postgres.sh
+    owner: root
+    group: root
+    mode: "u+rwx,g+r,o+r"
+
+- name: Setup cron job 
+  cron:
+    name: postgres backup
+    minute: "45"
+    hour: "3"
+    job: "/usr/local/sbin/backup_postgres.sh"
+
+- name: Add entry to backup file list
+  lineinfile:
+    dest: "{{ backup_include_filelist }}"
+    line: /var/local/backups/postgres
+    create: yes

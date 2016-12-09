@@ -9,3 +9,4 @@
     - nginx-vhost
     - postgres
     - mattermost
+    - backup-destination

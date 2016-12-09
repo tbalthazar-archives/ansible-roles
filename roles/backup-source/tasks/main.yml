@@ -1,0 +1,40 @@
+---
+- name: Copy backup user private ssh key
+  copy:
+    src: ../../../vaults/backup_user_id_rsa
+    dest: /root/.ssh/backup_user_id_rsa
+    owner: root
+    group: root
+    mode: 0600
+
+- name: Copy gpg public key to encrypt backups
+  copy:
+    src: new-gpg-public-key.asc
+    dest: /root/new-gpg-public-key.asc
+    owner: root
+    group: root
+    mode: 0600
+
+- name: Import gpg public key
+  shell: gpg --import /root/new-gpg-public-key.asc
+
+- name: Create backup script conf
+  file:
+    path: "{{ backup_include_filelist }}"
+    state: touch
+    mode: 0644
+
+- name: Copy backup script
+  template: 
+    src: backup.j2
+    dest: /usr/local/sbin/backup.sh
+    owner: root
+    group: root
+    mode: "u+rwx,g+r,o+r"
+
+- name: Setup cron job 
+  cron:
+    name: duplicity backup
+    minute: "0"
+    hour: "4"
+    job: "/usr/local/sbin/backup.sh"

@@ -1,0 +1,14 @@
+---
+- name: Add user
+  user:
+    name: "{{ backup_user }}"
+    password: "{{ backup_user_password }}"
+    shell: /bin/bash
+
+- name: Set up authorized_keys for the backup user
+  authorized_key:
+    user: "{{ backup_user }}"
+    key: "{{ item }}"
+  with_file:
+    - ../../../vaults/backup_user_id_rsa.pub
+

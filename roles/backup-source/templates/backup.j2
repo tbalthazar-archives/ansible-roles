@@ -1,0 +1,28 @@
+#!/bin/bash
+
+# --- config
+ssh_private_key="/root/.ssh/backup_user_id_rsa"
+gpg_key_id="{{ backup_gpg_key_id }}"
+include_filelist="{{ backup_include_filelist }}"
+email="{{ notification_email }}"
+log_file="/var/log/duplicity.out.log"
+error_log_file="/var/log/duplicity.error.log"
+
+# --- duplicity command
+duplicity \
+  --ssh-options="-oIdentityFile=$ssh_private_key" \
+  --gpg-options="--trust-model=always" \
+  --encrypt-key="$gpg_key_id" \
+  --include-filelist="$include_filelist" \
+  --exclude='**' \
+  / \
+  {{ backup_url }} \
+  >> $log_file \
+  2>> $error_log_file
+
+# --- logging
+if [ $? -ne 0 ]; then
+  tail -22 $error_log_file | mailx -s "Duplicity backup error log" $email
+else
+  tail -22 $log_file  | mailx -s "Duplicity backup log" $email
+fi

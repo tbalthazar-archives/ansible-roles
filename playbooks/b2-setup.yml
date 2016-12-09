@@ -1,7 +1,7 @@
 ---
 - hosts: b2.tb.io
   pre_tasks:
-    - include_vars: ../vaults/b1.yml
+    - include_vars: ../vaults/b2.yml
   vars:
     hostname: b2.tb.io
     postfix_domain: "{{ hostname }}"
