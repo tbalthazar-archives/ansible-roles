@@ -1,2 +1,2 @@
 b1.tb.io ansible_become=yes ansible_port=2222
-b2.tb.io ansible_become=yes ansible_port=2222
+backup.tb.io ansible_become=yes ansible_port=2222
