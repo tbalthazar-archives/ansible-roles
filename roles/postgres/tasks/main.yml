@@ -21,6 +21,12 @@
     group: root
     mode: 0644
 
+- name: Create backup dir 
+  file:
+    path: "{{ postgres_backup_dir }}"
+    state: directory
+    mode: 0600
+
 - name: Setup cron job 
   cron:
     name: postgres backup

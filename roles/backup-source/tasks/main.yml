@@ -1,4 +1,13 @@
 ---
+- name: Install duplicity
+  apt:
+    pkg: "{{ item }}"
+    state: latest
+    update_cache: yes
+    cache_valid_time: 600
+  with_items: "{{ packages }}"
+    - duplicity
+
 - name: Copy backup user private ssh key
   copy:
     src: ../../../vaults/backup_user_id_rsa
