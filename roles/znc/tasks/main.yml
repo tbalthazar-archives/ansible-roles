@@ -1,0 +1,84 @@
+- name: Install znc
+  apt: 
+    pkg: znc
+    default_release: jessie-backports
+    state: latest
+    update_cache: yes
+    cache_valid_time: 600
+
+- name: Create znc group
+  group:
+    name: znc
+    state: present
+
+- name: Create znc user
+  user:
+    name: znc
+    state: present
+    home: /usr/lib/znc
+    system: yes
+    group: znc
+    shell: /usr/sbin/nologin
+
+- name: Ensure pid directory exists
+  file:
+    state: directory
+    path: /var/run/znc
+    group: znc
+    owner: znc
+
+- name: Ensure configuration folders exist
+  file:
+    state: directory
+    path: /usr/lib/znc/{{ item }}
+    group: znc
+    owner: znc
+  with_items:
+    - moddata
+    - modules
+    - users
+
+- name: Copy znc service file into place
+  copy:
+    src: etc/systemd/system/znc.service
+    dest: /etc/systemd/system/znc.service
+    mode: 0644
+
+- name: Self-signed SSL certificate
+  shell: if [ ! -f /usr/lib/znc/znc.pem ]; then znc --datadir=/usr/lib/znc --makepem; fi
+  notify: restart znc
+
+- name: Ensure znc user and group can read cert
+  file:
+    path: /usr/lib/znc/znc.pem
+    group: znc
+    owner: znc
+    mode: 0640
+  notify: restart znc
+
+- name: Create znc config directory
+  file:
+    state: directory
+    path: /usr/lib/znc/configs
+    group: znc
+    owner: znc
+
+- name: Copy znc configuration file into place
+  template:
+    src: usr/lib/znc/configs/znc.j2
+    dest: /usr/lib/znc/configs/znc.conf
+    owner: znc
+    group: znc
+  notify: restart znc
+
+- name: Set firewall rule for znc
+  ufw:
+    rule: allow
+    port: 6697
+    proto: tcp
+
+- name: Ensure znc is a system service
+  service:
+    name: znc
+    state: restarted
+    enabled: true
