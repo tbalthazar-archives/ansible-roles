@@ -10,7 +10,7 @@ error_log_file="/var/log/duplicity.error.log"
 backup_url="{{ backup_url }}"
 
 # --- duplicity command
-duplicity \
+/usr/bin/duplicity \
   --ssh-options="-oIdentityFile=$ssh_private_key" \
   --gpg-options="--trust-model=always" \
   --encrypt-key="$gpg_key_id" \
