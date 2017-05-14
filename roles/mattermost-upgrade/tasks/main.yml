@@ -1,0 +1,54 @@
+---
+- name: Stop service
+  systemd:
+    name: mattermost
+    state: stopped
+
+- name: Create Mattermost upgrade directories
+  file:
+    path: "{{ item }}"
+    state: directory
+  with_items:
+    - /opt/mattermost-upgrade
+
+- name: Download Mattermost
+  unarchive:
+    src: "https://releases.mattermost.com/{{ mattermost_version }}/mattermost-team-{{ mattermost_version }}-linux-amd64.tar.gz"
+    dest: "/opt/mattermost-upgrade"
+    remote_src: yes
+
+- name: Copy configuration
+  command: cp /opt/mattermost/config/config.json /opt/mattermost-upgrade/mattermost/config/config.json
+
+- name: Copy data
+  command: cp -R /opt/mattermost/data /opt/mattermost-upgrade/mattermost/data
+
+- name: Set permissions
+  file:
+    path: /opt/mattermost-upgrade
+    state: directory
+    owner: mattermost
+    group: mattermost
+    mode: g+w
+    recurse: yes
+
+- name: Move old Mattermost
+  command: mv /opt/mattermost /opt/mattermost-old
+
+- name: Move upgraded Mattermost
+  command: mv /opt/mattermost-upgrade/mattermost /opt/mattermost
+
+- name: Delete upgrade directory
+  file:
+    path: /opt/mattermost-upgrade
+    state: absent
+
+- name: Start service
+  systemd:
+    name: mattermost
+    state: started
+
+- name: Delete old directory
+  file:
+    path: /opt/mattermost-old
+    state: absent
