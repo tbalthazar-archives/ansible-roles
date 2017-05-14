@@ -1,0 +1,4 @@
+---
+- hosts: b1.tb.io
+  roles:
+    - znc
