@@ -1,19 +1,31 @@
 # Ansible roles
 
-This is a work in progress.
-
 ## Usage
 
 ## Setup a server
 
 ```bash
-$ ansible-playbook playbooks/b1-setup.yml --ask-vault-pass --ask-become-pass
+$ ansible-playbook playbooks/b1.tb.io/setup.yml --ask-vault-pass --ask-become-pass
 ```
 
-## Configure a website
+## Mattermost
+
+### Install
 
 ```bash
-$ ansible-playbook playbooks/b1-www.yml --ask-vault-pass --ask-become-pass
+$ ansible-playbook playbooks/b1.tb.io/mattermost.yml --ask-vault-pass --ask-become-pass
+```
+
+### Upgrade
+
+```bash
+$ ansible-playbook playbooks/b1.tb.io/mattermost-upgrade.yml --ask-vault-pass --ask-become-pass
+```
+
+### ZNC
+
+```bash
+$ ansible-playbook playbooks/b1.tb.io/znc.yml --ask-vault-pass --ask-become-pass
 ```
 
 ## Using Vaults
